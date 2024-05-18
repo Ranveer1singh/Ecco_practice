@@ -9,12 +9,14 @@ const authenticateUser = async (req, res, next) => {
   const token = authHeader.split(' ')[1]; // Extract token without "Bearer" prefix
   try {
     const decoded = await verifyToken(token);
+    // Debugging statement
+    // console.log('Decoded token:', decoded);
     req.user = decoded;
     next();
   } catch (err) {
+    console.error('Error verifying token:', err); // Debugging statement
     return res.status(401).json({ message: 'Unauthorized: Invalid token' });
   }
 };
-
 
 module.exports = { authenticateUser };
