@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('./config/db');
 const authRoutes = require('./routes/auth');
+const userRoutes = require("./routes/User");
 const errorHandler = require('./middlewares/errorHandler');
 require('dotenv').config();
 const app = express();
@@ -14,6 +15,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/user',userRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

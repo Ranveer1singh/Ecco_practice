@@ -37,7 +37,7 @@ exports.registerUser = async (req, res, next) => {
     } catch (err) {
       next(err);
     }
-  };
+};
   
 
 // exports.registerUser = async (req, res, next) => {
@@ -76,6 +76,7 @@ exports.loginUser = async (req, res, next) => {
       console.log('User not found');
       return res.status(401).json({ message: 'Invalid credentials' });
     }
+    
 
     const isMatch = await bcrypt.compare(password, user.password);
 
@@ -98,6 +99,7 @@ exports.loginUser = async (req, res, next) => {
     next(err);
   }
 };
+
 
 exports.logoutUser = async (req,res,next)=>{
     try {
