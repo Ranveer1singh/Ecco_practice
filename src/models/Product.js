@@ -14,10 +14,10 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   description: String,
-  images : {
-    type:String,
-    default : []
-  },
+  // images : {
+  //   type:String,
+  //   default : []
+  // },
   createdAt: {
     type: Date,
     default: Date.now,

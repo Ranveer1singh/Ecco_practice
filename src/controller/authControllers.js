@@ -5,40 +5,51 @@ const sanitizeHtml =require('sanitize-html');
 const { generateToken } = require('../config/jwt');
 
 exports.registerUser = async (req, res, next) => {
-    try {
-      const { email, password } = req.body;
-  
-      // Input validation
-      if (!validator.isEmail(email)) {
-        return res.status(400).json({ message: 'Invalid email format' });
-      }
-  
-      if (!validator.isStrongPassword(password)) {
-        return res.status(400).json({ message: 'Password does not meet complexity requirements' });
-      }
-  
-      // Data sanitization
-      const sanitizedEmail = sanitizeHtml(email);
-      const sanitizedPassword = sanitizeHtml(password);
-  
-      // Check for existing user
-      const existingUser = await User.findOne({ email: sanitizedEmail });
-      if (existingUser) {
-        return res.status(400).json({ message: 'User already exists' });
-      }
-  
-      // Create new user
-      const user = await User.create({ email: sanitizedEmail, password: sanitizedPassword });
-  
-      // Generate authentication token
-      const token = generateToken({ userId: user._id, email: user.email });
-  
-      res.json({ token });
-    } catch (err) {
-      next(err);
+  try {
+    const { name, lastName, isAdmin, email, password } = req.body;
+
+    // Input validation
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({ message: 'Invalid email format' });
     }
+    if (!validator.isStrongPassword(password)) {
+      return res.status(400).json({ message: 'Password does not meet complexity requirements' });
+    }
+    if (!validator.isAlpha(name, 'en-US', { ignore: ' ' })) {
+      return res.status(400).json({ message: 'Name should only contain letters' });
+    }
+    if (!validator.isAlpha(lastName, 'en-US', { ignore: ' ' })) {
+      return res.status(400).json({ message: 'Last name should only contain letters' });
+    }
+
+    // Data sanitization
+    const sanitizedName = sanitizeHtml(name);
+    const sanitizedLastName = sanitizeHtml(lastName);
+    const sanitizedEmail = sanitizeHtml(email);
+    const sanitizedPassword = sanitizeHtml(password);
+
+    // Check for existing user
+    const existingUser = await User.findOne({ email: sanitizedEmail });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    // Create new user
+    const user = await User.create({
+      name: sanitizedName,
+      lastName: sanitizedLastName,
+      isAdmin: isAdmin || false, // Set isAdmin to false if not provided
+      email: sanitizedEmail,
+      password: sanitizedPassword,
+    });
+
+    // Generate authentication token
+    const token = generateToken({ userId: user._id, email: user.email });
+    res.json({ token });
+  } catch (err) {
+    next(err);
+  }
 };
-  
 
 // exports.registerUser = async (req, res, next) => {
 //   try {
