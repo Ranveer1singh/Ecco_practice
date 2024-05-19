@@ -15,16 +15,20 @@ exports.registerUser = async (req, res, next) => {
     if (!validator.isStrongPassword(password)) {
       return res.status(400).json({ message: 'Password does not meet complexity requirements' });
     }
-    if (!validator.isAlpha(name, 'en-US', { ignore: ' ' })) {
+
+    // Check if name and lastName are provided
+    const sanitizedName = name ? sanitizeHtml(name) : '';
+    const sanitizedLastName = lastName ? sanitizeHtml(lastName) : '';
+
+    // Validate name and lastName if provided
+    if (sanitizedName && !validator.isAlpha(sanitizedName, 'en-US', { ignore: ' ' })) {
       return res.status(400).json({ message: 'Name should only contain letters' });
     }
-    if (!validator.isAlpha(lastName, 'en-US', { ignore: ' ' })) {
+    if (sanitizedLastName && !validator.isAlpha(sanitizedLastName, 'en-US', { ignore: ' ' })) {
       return res.status(400).json({ message: 'Last name should only contain letters' });
     }
 
     // Data sanitization
-    const sanitizedName = sanitizeHtml(name);
-    const sanitizedLastName = sanitizeHtml(lastName);
     const sanitizedEmail = sanitizeHtml(email);
     const sanitizedPassword = sanitizeHtml(password);
 
@@ -38,7 +42,7 @@ exports.registerUser = async (req, res, next) => {
     const user = await User.create({
       name: sanitizedName,
       lastName: sanitizedLastName,
-      isAdmin: isAdmin || false, // Set isAdmin to false if not provided
+      isAdmin: isAdmin || false,
       email: sanitizedEmail,
       password: sanitizedPassword,
     });
