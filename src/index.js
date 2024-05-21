@@ -7,7 +7,7 @@ const errorHandler = require('./middlewares/errorHandler');
 require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+require('events').EventEmitter.defaultMaxListeners = 20; // or any other higher value
 // Connect to MongoDB
 db.connect();
 
