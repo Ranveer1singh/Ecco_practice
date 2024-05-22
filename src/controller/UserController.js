@@ -1,7 +1,8 @@
 const User = require("../models/User");
 const authUser = require("../middlewares/authMiddleware");
 const Product = require("../models/Product");
-
+const Cart = require("../models/Cart")
+// UserProfile 
 exports.userProfile = async (req, res, next) => {
   try {
     const userId = req.user.userId;
@@ -34,6 +35,7 @@ exports.userProfile = async (req, res, next) => {
   }
 };
 
+// All Products 
 exports.getAllProducts = async (req, res, next) => {
   try {
     const products = await Product.find({});
@@ -49,4 +51,50 @@ exports.getAllProducts = async (req, res, next) => {
       error: err,
     });
   }
+};
+
+// Add Product To Cart
+exports.addProductToCart = async (req,res,next) =>{
+  try{
+    const userId = req.user.userId;
+    const productId = req.body.productId;
+    const quantity = req.body.quantity || 1;
+
+    // find product
+    const product = await Product.findById(productId);
+
+    if(!product){
+      return res.status(404).json({
+       message: "product not found"
+      })
+    }
+
+    let cart = await Cart.findOne({user : userId});
+    if(!cart){
+     cart = new Cart({
+      user:userId,
+      items:[],
+     })
+    }
+
+    const existingItem = cart.items.find(item => item.product.tostring() === productId);
+    if(existingItem){
+      existingItem.quantity += quantity
+    }else{
+      cart.items.push({
+          product : productId,quantity
+      })
+    }
+    await cart.save();
+
+    res.status(201).json({
+      message : "product added to cart ",
+      data:cart
+    })
+  }catch(error){
+    res.status(500).json({
+      message:"internal server Error ",
+      Error : error
+    });
+  };
 };
