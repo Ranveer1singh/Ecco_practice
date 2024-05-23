@@ -1,8 +1,8 @@
 const User = require("../models/User");
 const authUser = require("../middlewares/authMiddleware");
 const Product = require("../models/Product");
-const Cart = require("../models/Cart")
-// UserProfile 
+const Cart = require("../models/Cart");
+// UserProfile
 exports.userProfile = async (req, res, next) => {
   try {
     const userId = req.user.userId;
@@ -35,7 +35,7 @@ exports.userProfile = async (req, res, next) => {
   }
 };
 
-// All Products 
+// All Products
 exports.getAllProducts = async (req, res, next) => {
   try {
     const products = await Product.find({});
@@ -54,47 +54,69 @@ exports.getAllProducts = async (req, res, next) => {
 };
 
 // Add Product To Cart
-exports.addProductToCart = async (req,res,next) =>{
-  try{
-    const userId = req.user.userId;
-    const productId = req.body.productId;
-    const quantity = req.body.quantity || 1;
+exports.addProductToCart = async (req, res, next) => {
+  const userId = req.user.userId;
+  console.log("user id", userId);
+  const { productId, quantity } = req.body;
+ // Ensure quantity is a number and has a default value of 1 if not provided
+ const parsedQuantity = quantity !== undefined ? parseInt(quantity, 10) : 1;
 
-    // find product
-    const product = await Product.findById(productId);
+ if (isNaN(parsedQuantity)) {
+   return res.status(400).json({
+     message: "Invalid quantity value",
+   });
+ }
+  try {
+    let cart = await Cart.findOne({ UserId: userId });
 
-    if(!product){
-      return res.status(404).json({
-       message: "product not found"
-      })
+    if (!cart) {
+      cart = new Cart({
+        UserId: userId,
+        items: [
+          {
+            product: productId,
+            quantity:parsedQuantity,
+          },
+        ],
+      });
+      await cart.save(); // Ensure new cart is saved
+    } else {
+      const itemIndex = cart.items.findIndex(
+        (item) => item.product.toString() === productId
+      );
+
+      if (itemIndex > -1) {
+        cart.items[itemIndex].quantity += parsedQuantity;
+      } else {
+        cart.items.push({
+          product: productId,
+          quantity : parsedQuantity,
+        });
+      }
+      await cart.save(); // Save the updated cart
     }
-
-    let cart = await Cart.findOne({user : userId});
-    if(!cart){
-     cart = new Cart({
-      user:userId,
-      items:[],
-     })
-    }
-
-    const existingItem = cart.items.find(item => item.product.tostring() === productId);
-    if(existingItem){
-      existingItem.quantity += quantity
-    }else{
-      cart.items.push({
-          product : productId,quantity
-      })
-    }
-    await cart.save();
 
     res.status(201).json({
-      message : "product added to cart ",
-      data:cart
-    })
-  }catch(error){
-    res.status(500).json({
-      message:"internal server Error ",
-      Error : error
+      message: "Product added to cart",
+      data: cart,
     });
-  };
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal server error",
+      error: error,
+    });
+  }
 };
+exports.getCartDetails =async (req, res) => {
+  const userId = req.params.userId;
+  
+  try {
+    const cart = await Cart.findOne({ userId }).populate('items.productId');
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+    res.status(200).json(cart);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
