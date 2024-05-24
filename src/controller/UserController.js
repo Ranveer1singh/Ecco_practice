@@ -56,7 +56,6 @@ exports.getAllProducts = async (req, res, next) => {
 // Add Product To Cart
 exports.addProductToCart = async (req, res, next) => {
   const userId = req.user.userId;
-  console.log("user id", userId);
   const { productId, quantity } = req.body;
  // Ensure quantity is a number and has a default value of 1 if not provided
  const parsedQuantity = quantity !== undefined ? parseInt(quantity, 10) : 1;
@@ -107,11 +106,15 @@ exports.addProductToCart = async (req, res, next) => {
     });
   }
 };
-exports.getCartDetails =async (req, res) => {
-  const userId = req.params.userId;
-  
+
+exports.getCartDetails = async (req, res) => {
+  const UserId = req.params.userId;
+
   try {
-    const cart = await Cart.findOne({ userId }).populate('items.productId');
+    const cart = await Cart.findOne({UserId})
+    .populate({
+      path:"items.product"
+    });
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
     }
@@ -119,4 +122,4 @@ exports.getCartDetails =async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}
+};
