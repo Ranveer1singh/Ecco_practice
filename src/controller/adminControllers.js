@@ -16,7 +16,10 @@ exports.addProduct = async (req, res, next) => {
 
     const savedProduct = await newProduct.save();
 
-    res.status(201).json(savedProduct);
+    res.status(201).json({
+      message: "Product added successfully",
+      product: savedProduct,
+    });
     
   } catch (err) {
     res.status(500).json({
