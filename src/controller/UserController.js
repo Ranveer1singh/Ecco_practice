@@ -2,6 +2,7 @@ const User = require("../models/User");
 const authUser = require("../middlewares/authMiddleware");
 const Product = require("../models/Product");
 const Cart = require("../models/Cart");
+
 // UserProfile
 exports.userProfile = async (req, res, next) => {
   try {
@@ -21,13 +22,13 @@ exports.userProfile = async (req, res, next) => {
 
     // Return the user's profile data
     res.status(200).json({
+      message: "User found successfully",
       data: {
         // id: user._id,
-        name: user.name,
+        name: user.FirstName,
         email: user.email,
         // Include any other necessary fields
       },
-      message: "User found successfully",
     });
   } catch (err) {
     console.error("Error fetching user profile:", err); // Log the error for debugging
