@@ -28,7 +28,6 @@ exports.addProduct = async (req, res, next) => {
     });
   }
 };
-
 // update product by id 
 exports.updateProduct = async (req, res, next) => {
   const { id } = req.params;
