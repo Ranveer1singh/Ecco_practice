@@ -1,7 +1,13 @@
+// MOdels
 const User = require("../models/User");
-const authUser = require("../middlewares/authMiddleware");
 const Product = require("../models/Product");
 const Cart = require("../models/Cart");
+
+// Middlewares 
+const authUser = require("../middlewares/authMiddleware");
+
+// controllers
+
 // UserProfile
 exports.userProfile = async (req, res, next) => {
   try {
@@ -108,7 +114,7 @@ exports.addProductToCart = async (req, res, next) => {
 };
 
 exports.getCartDetails = async (req, res) => {
-  const UserId = req.params.userId;
+  const UserId = req.user.userId;
 
   try {
     const cart = await Cart.findOne({UserId})

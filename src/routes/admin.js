@@ -7,6 +7,7 @@ const {authenticateUser} = require("../middlewares/authMiddleware");
 
 // admin access route only
 router.post("/new/product",authenticateUser,isAdmin,addProduct);
+
 // routes/productRoutes.js
 router.put('/update/product/:id', authenticateUser, isAdmin, updateProduct);
 router.delete('/delete/product/:id', authenticateUser, isAdmin, deleteProduct);
