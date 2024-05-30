@@ -6,7 +6,7 @@ const { generateToken } = require('../config/jwt');
 
 exports.registerUser = async (req, res, next) => {
   try {
-    const { name, lastName, isAdmin, email, password } = req.body;
+    const { FirstName, LastName, isAdmin, email, password } = req.body;
 
     // Input validation
     if (!validator.isEmail(email)) {
@@ -16,11 +16,11 @@ exports.registerUser = async (req, res, next) => {
       return res.status(400).json({ message: 'Password does not meet complexity requirements' });
     }
 
-    // Check if name and lastName are provided
-    const sanitizedName = name ? sanitizeHtml(name) : '';
-    const sanitizedLastName = lastName ? sanitizeHtml(lastName) : '';
+    // Check if name and LastName are provided
+    const sanitizedName = FirstName ? sanitizeHtml(FirstName) : '';
+    const sanitizedLastName = LastName ? sanitizeHtml(LastName) : '';
 
-    // Validate name and lastName if provided
+    // Validate name and LastName if provided
     if (sanitizedName && !validator.isAlpha(sanitizedName, 'en-US', { ignore: ' ' })) {
       return res.status(400).json({ message: 'Name should only contain letters' });
     }
@@ -40,45 +40,24 @@ exports.registerUser = async (req, res, next) => {
 
     // Create new user
     const user = await User.create({
-      name: sanitizedName,
-      lastName: sanitizedLastName,
-      isAdmin: isAdmin || false,
+      FirstName: sanitizedName,
+      LastName: sanitizedLastName,
+      isAdmin: isAdmin ,
       email: sanitizedEmail,
       password: sanitizedPassword,
     });
 
     // Generate authentication token
     const token = generateToken({ userId: user._id, email: user.email });
-    res.json({ token });
+    res.status(201).json({ 
+      message:"User Created Successfully",
+      token : token
+    });
+
   } catch (err) {
     next(err);
   }
 };
-
-// exports.registerUser = async (req, res, next) => {
-//   try {
-//     const { email, password } = req.body;
-//     const existingUser = await User.findOne({ email });
-
-//     if (existingUser) {
-//       return res.status(400).json({ message: 'User already exists' });
-//     }
-
-//     // const hashedPassword = await bcrypt.hash(password, 10);
-//     const user = await User.create({ email, password});
-
-//     const token = generateToken({ userId: user._id });
-//     res.status(200).json({
-//       success: true,
-//       data: {
-//         userId: user,
-//         token: token,
-//       },
-//     });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
 
 exports.loginUser = async (req, res, next) => {
   try {
