@@ -117,7 +117,7 @@ exports.getCartDetails = async (req, res) => {
       path:"items.product"
     });
     if (!cart) {
-      return res.status(404).json({ message: 'Cart not found' });
+      return res.status(404).json({ message: 'Add Product to your cart' });
     }
     res.status(200).json(cart);
   } catch (error) {

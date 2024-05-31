@@ -1,5 +1,6 @@
 const express = require('express');
 const http = require('http');
+const morgan = require('morgan')
 const db = require('./config/db');
 const authRoutes = require('./routes/auth');
 const userRoutes = require("./routes/User");
@@ -15,6 +16,8 @@ db.connect();
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev')) // for logging http request and monitoring and debugging
 
 // Routes
 app.use('/api/auth', authRoutes);
