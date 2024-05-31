@@ -25,11 +25,7 @@ app.use('/api/admin',adminRoutes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-const server = http.createServer((req, res) => {
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World\n');
-});
+const server = http.createServer(app);
 // Start server
 server.listen(PORT, (err) => {
   if (err) {
