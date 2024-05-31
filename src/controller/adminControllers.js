@@ -3,7 +3,8 @@ const Product = require("../models/Product");
 // add new  product 
 exports.addProduct = async (req, res, next) => {
   try {
-    const { name, price, category, description, images } = req.body;
+    const { name, price, category, description } = req.body;
+    const images = req.files.map(file => file.path);
 
     // add new product
     const newProduct = new Product({
@@ -20,7 +21,7 @@ exports.addProduct = async (req, res, next) => {
       message: "Product added successfully",
       product: savedProduct,
     });
-    
+
   } catch (err) {
     res.status(500).json({
       message: "internal server error",
