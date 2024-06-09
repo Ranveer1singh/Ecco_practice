@@ -1,7 +1,7 @@
 const Product = require("../models/Product");
 
 // add new  product 
-exports.addProduct = async (req, res, next) => {
+exports.addProduct = async (req, res,) => {
   try {
     const { name, price, category, description } = req.body;
     const images = req.files.map(file => file.path);
@@ -52,6 +52,7 @@ exports.updateProduct = async (req, res, next) => {
     });
   }
 };
+
 exports.deleteProduct = async (req, res, next) => {
   const { id } = req.params;
   // const updateData = req.body;
