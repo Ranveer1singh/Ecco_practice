@@ -18,17 +18,19 @@ db.connect();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev')) // for logging http request and monitoring and debugging
+app.use(errorHandler); // Error handling middleware
+
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user',userRoutes);
 app.use('/api/admin',adminRoutes);
 
-// Error handling middleware
-app.use(errorHandler);
+
 
 const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
+
 // Start server
 server.listen(PORT, (err) => {
   if (err) {
@@ -37,6 +39,7 @@ server.listen(PORT, (err) => {
     console.log(`Server running at http://localhost:${PORT}/`);
   }
 });
+
 
 // Handle server errors
 server.on('error', (error) => {
