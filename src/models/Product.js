@@ -4,16 +4,23 @@ const productSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    trim: true,
   },
   price: {
     type: Number,
     required: true,
+    trim: true,
   },
   category: {
     type: String,
     required: true,
+    trim: true,
   },
-  description: String,
+  description: {
+    type : String,
+    trim: true,
+    required:true,
+  },
   images: {
     type: [String], // Define images as an array of strings
     default: [],

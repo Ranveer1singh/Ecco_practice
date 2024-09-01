@@ -1,10 +1,12 @@
 const mongoose = require("mongoose");
+const { trim } = require("validator");
 
 const CartItemSchema = new mongoose.Schema({
     product : {
         type : mongoose.Schema.Types.ObjectId,
         ref:"Product",
-        required:true
+        required:true,
+        trim : true
     },
     quantity:{
         type:Number,
